@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header page-header-row">
+    <div>
+        <p class="eyebrow">预测报告</p>
+        <h1 id="report-title">加载中...</h1>
+        <p>查看预测曲线、模型误差、推荐模型和可导出的预测明细。</p>
+    </div>
+    <div>
+        <a href="#" id="btn-export" class="btn btn-outline-success me-2">导出 CSV</a>
+        <a href="/prediction" class="btn btn-primary">重新预测</a>
+    </div>
+</div>
+
+<div class="report-summary mb-3">
+    <div>
+        <span>推荐模型</span>
+        <strong id="summary-best-model">等待结果</strong>
+    </div>
+    <div>
+        <span>预测对象</span>
+        <strong id="summary-target">-</strong>
+    </div>
+    <div>
+        <span>预测天数</span>
+        <strong id="summary-days">-</strong>
+    </div>
+    <div>
+        <span>报告状态</span>
+        <strong>已生成</strong>
+    </div>
+</div>
+
+<ul class="nav nav-tabs app-tabs mb-3" id="reportTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="forecast-tab" data-bs-toggle="tab" data-bs-target="#forecast" type="button" role="tab">预测结果</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="metrics-tab" data-bs-toggle="tab" data-bs-target="#metrics" type="button" role="tab">模型性能</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab">详细分析</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="reportTabsContent">
+    <div class="tab-pane fade show active" id="forecast" role="tabpanel">
+        <div class="card app-card mb-3 chart-primary">
+            <div class="card-body">
+                <div id="chart-forecast" style="height: 460px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="metrics" role="tabpanel">
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card app-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">性能指标对比</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover text-center align-middle" id="metrics-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>模型</th>
+                                        <th>排名</th>
+                                        <th>MAE</th>
+                                        <th>RMSE</th>
+                                        <th>MAPE</th>
+                                        <th>SMAPE</th>
+                                        <th>R²</th>
+                                        <th>综合评分</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card app-card h-100">
+                    <div class="card-body">
+                        <div id="chart-bar" style="height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card app-card h-100">
+                    <div class="card-body">
+                        <div id="chart-radar" style="height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="details" role="tabpanel">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card app-card border-primary" id="recommendation-card">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">
+                            <span class="badge bg-primary me-2">推荐模型</span>
+                            <span id="rec-model-name" class="fw-bold"></span>
+                        </h5>
+                        <p class="card-text mt-3" id="rec-reason"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="details-charts-container">
+            <div class="col-12 mb-4 d-none" id="container-components">
+                <div class="card app-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Prophet 成分分析</h5>
+                        <div id="chart-components" style="height: 400px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mb-4 d-none" id="container-lstm-loss">
+                <div class="card app-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">LSTM 训练损失</h5>
+                        <div id="chart-lstm-loss" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/report.js"></script>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">预测工作台</p>
+        <h1>预测配置</h1>
+        <p>选择预测对象、模型组合和训练参数，后台会按任务进度执行并生成报告。</p>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-4" id="config-panel">
+        <div class="config-card sticky-panel mb-4">
+            <div class="card-body">
+                <div class="panel-title">
+                    <div>
+                        <p class="eyebrow">预测对象</p>
+                        <h2>任务配置</h2>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">预测品类</label>
+                    <select class="form-select" id="pred-family"></select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">预测门店</label>
+                    <select class="form-select" id="pred-store"></select>
+                </div>
+
+                <div id="adf-result" class="alert alert-info d-none mb-3">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label d-flex justify-content-between">
+                        <span>预测天数</span>
+                        <span id="forecast-days-val" class="text-primary fw-bold">30</span>
+                    </label>
+                    <input type="range" class="form-range" id="forecast-days" min="7" max="90" value="30">
+                </div>
+
+                <h5 class="card-title mb-3">模型选择与参数</h5>
+                
+                <div class="model-config mb-3">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="model-arima" checked>
+                        <label class="form-check-label fw-bold" for="model-arima">ARIMA</label>
+                    </div>
+                    <div class="collapse show" id="params-arima">
+                        <label class="form-label small">信息准则</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="arima-criterion" id="arima-aic" value="aic" checked>
+                                <label class="form-check-label small" for="arima-aic">AIC</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="arima-criterion" id="arima-bic" value="bic">
+                                <label class="form-check-label small" for="arima-bic">BIC</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-config mb-3">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="model-prophet" checked>
+                        <label class="form-check-label fw-bold" for="model-prophet">Prophet</label>
+                    </div>
+                    <div class="collapse show" id="params-prophet">
+                        <div class="mb-2">
+                            <label class="form-label small d-flex justify-content-between">
+                                <span>变点先验规模</span>
+                                <span id="prophet-cps-val" class="text-primary">0.05</span>
+                            </label>
+                            <input type="range" class="form-range" id="prophet-cps" min="0.01" max="0.5" step="0.01" value="0.05">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">季节性模式</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="prophet-seasonality" id="prophet-add" value="additive" checked>
+                                    <label class="form-check-label small" for="prophet-add">加法</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="prophet-seasonality" id="prophet-mul" value="multiplicative">
+                                    <label class="form-check-label small" for="prophet-mul">乘法</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="prophet-promo" checked>
+                            <label class="form-check-label small" for="prophet-promo">使用促销特征</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-config mb-4">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="model-lstm">
+                        <label class="form-check-label fw-bold" for="model-lstm">LSTM</label>
+                    </div>
+                    <div class="collapse" id="params-lstm">
+                        <div class="mb-2">
+                            <label class="form-label small d-flex justify-content-between">
+                                <span>训练轮数 (Epochs)</span>
+                                <span id="lstm-epochs-val" class="text-primary">50</span>
+                            </label>
+                            <input type="range" class="form-range" id="lstm-epochs" min="10" max="100" value="50">
+                        </div>
+                        <div>
+                            <label class="form-label small d-flex justify-content-between">
+                                <span>序列长度 (Seq Len)</span>
+                                <span id="lstm-seq-val" class="text-primary">30</span>
+                            </label>
+                            <input type="range" class="form-range" id="lstm-seq" min="7" max="60" value="30">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button class="btn btn-primary btn-lg" id="btn-start">开始预测 ▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="forecast-preview h-100" id="prediction-preview">
+            <div class="preview-header">
+                <div>
+                    <p class="eyebrow">预测准备</p>
+                    <h2>序列诊断与模型范围</h2>
+                    <p>选择品类和门店后，系统会执行 ADF 平稳性检验，并在开始预测后展示训练进度。</p>
+                </div>
+                <span class="status-pill">Ready</span>
+            </div>
+            <div class="diagnostic-board" aria-hidden="true">
+                <div class="diagnostic-row">
+                    <span>ADF 检验</span>
+                    <strong>等待选择对象</strong>
+                </div>
+                <div class="diagnostic-row">
+                    <span>预测窗口</span>
+                    <strong>7-90 天</strong>
+                </div>
+                <div class="diagnostic-row">
+                    <span>模型输出</span>
+                    <strong>预测值 / 置信区间 / 误差指标</strong>
+                </div>
+            </div>
+            <div class="model-brief-grid">
+                <div><strong>ARIMA</strong><span>统计模型，适合稳定序列</span></div>
+                <div><strong>Prophet</strong><span>节假日和趋势变点建模</span></div>
+                <div><strong>LSTM</strong><span>深度学习扩展对比模块</span></div>
+            </div>
+        </div>
+        <div class="card app-card h-100 d-none" id="progress-panel">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center p-5">
+                <h4 class="mb-4">预测任务执行中</h4>
+                
+                <div class="w-100 mb-3">
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" id="task-progress" role="progressbar" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+                
+                <p class="text-muted mb-5" id="task-step">正在初始化...</p>
+
+                <div class="w-100 mb-5" style="max-width: 400px;">
+                    <ul class="list-group list-group-flush" id="model-status-list">
+                        <li class="list-group-item d-flex justify-content-between align-items-center d-none" id="status-arima">
+                            <span>ARIMA 模型</span>
+                            <span class="status-icon">⏳</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center d-none" id="status-prophet">
+                            <span>Prophet 模型</span>
+                            <span class="status-icon">⏳</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center d-none" id="status-lstm">
+                            <span>LSTM 模型</span>
+                            <span class="status-icon">⏳</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-outline-danger" id="btn-cancel">取消预测</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/prediction.js"></script>
+{% endblock %}

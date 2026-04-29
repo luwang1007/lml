@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header page-header-row">
+    <div>
+        <p class="eyebrow">数据导入</p>
+        <h1>商贸销售数据分析与预测</h1>
+        <p>上传销售数据后进入分析、预测和报告流程。</p>
+    </div>
+    <div class="report-toolbar">
+        <span class="status-pill">CSV / XLSX</span>
+        <a href="/analysis" class="btn btn-outline-secondary">分析看板</a>
+        <a href="/prediction" class="btn btn-primary">预测工作台</a>
+    </div>
+</div>
+
+<div class="report-canvas mb-3">
+    <div class="slicer-row">
+        <div>
+            <span>数据集</span>
+            <strong>Favorita Store Sales</strong>
+        </div>
+        <div>
+            <span>门店</span>
+            <strong>5</strong>
+        </div>
+        <div>
+            <span>品类</span>
+            <strong>33</strong>
+        </div>
+        <div>
+            <span>当前状态</span>
+            <strong>等待上传</strong>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 align-items-stretch mb-4">
+    <div class="col-xl-7">
+        <div class="import-panel h-100">
+            <div class="card-body">
+                <div class="panel-title">
+                    <div>
+                        <p class="eyebrow">数据源</p>
+                        <h2>上传训练数据</h2>
+                    </div>
+                    <span class="status-pill">16MB 内</span>
+                </div>
+                <div id="drop-zone" class="drop-zone mb-3">
+                    <p class="mb-2 fw-semibold">拖拽数据文件到此处</p>
+                    <p class="text-muted small mb-3">支持 CSV / XLSX，最大 16MB</p>
+                    <input type="file" id="file-input" class="d-none" accept=".csv,.xlsx">
+                    <button type="button" class="btn btn-outline-primary" id="btn-select-file">选择文件</button>
+                    <div id="selected-filename" class="mt-2 text-primary fw-bold"></div>
+                </div>
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary btn-lg" id="btn-upload" disabled>上传数据</button>
+                </div>
+                <div class="progress mt-3 d-none" id="upload-progress-container">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" id="upload-progress" role="progressbar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-5">
+        <div class="pipeline-panel h-100">
+            <div class="panel-title">
+                <div>
+                    <p class="eyebrow">处理链路</p>
+                    <h2>流程状态</h2>
+                </div>
+            </div>
+            <div class="pipeline-step">
+                <span>01</span>
+                <div><strong>数据校验</strong><small>字段、编码、缺失和重复检测</small></div>
+            </div>
+            <div class="pipeline-step">
+                <span>02</span>
+                <div><strong>清洗加工</strong><small>异常值处理、节假日和促销特征</small></div>
+            </div>
+            <div class="pipeline-step">
+                <span>03</span>
+                <div><strong>趋势分析</strong><small>销售趋势、品类结构、门店分布</small></div>
+            </div>
+            <div class="pipeline-step">
+                <span>04</span>
+                <div><strong>预测评估</strong><small>多模型训练、指标对比和报告导出</small></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="summary-section" class="d-none">
+    <div class="section-heading">
+        <h3>数据概览</h3>
+        <span>数据已完成清洗并写入当前会话</span>
+    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card kpi-card h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">总记录数</h6>
+                    <h3 class="card-title text-primary" id="summary-total-rows">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">时间跨度</h6>
+                    <h5 class="card-title text-primary" id="summary-date-range">-</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">品类数量</h6>
+                    <h3 class="card-title text-primary" id="summary-family-count">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">门店数量</h6>
+                    <h3 class="card-title text-primary" id="summary-store-count">-</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="warnings-container" class="alert alert-warning d-none mb-4">
+        <h5 class="alert-heading">数据警告</h5>
+        <ul id="warnings-list" class="mb-0"></ul>
+    </div>
+
+    <div class="text-center">
+        <a href="/analysis" class="btn btn-success btn-lg">前往数据分析 →</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/upload.js"></script>
+{% endblock %}

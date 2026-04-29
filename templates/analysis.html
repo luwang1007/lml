@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header page-header-row">
+    <div>
+        <p class="eyebrow">分析看板</p>
+        <h1>销售运营分析</h1>
+        <p>按品类、门店和时间粒度查看销售趋势、结构占比和关键排行。</p>
+    </div>
+    <div class="toolbar d-flex gap-2 align-items-center flex-wrap">
+        <div class="btn-group" role="group" id="filter-granularity">
+            <input type="radio" class="btn-check" name="granularity" id="gran-daily" value="daily" autocomplete="off">
+            <label class="btn btn-outline-primary" for="gran-daily">日</label>
+            
+            <input type="radio" class="btn-check" name="granularity" id="gran-weekly" value="weekly" autocomplete="off">
+            <label class="btn btn-outline-primary" for="gran-weekly">周</label>
+            
+            <input type="radio" class="btn-check" name="granularity" id="gran-monthly" value="monthly" autocomplete="off" checked>
+            <label class="btn btn-outline-primary" for="gran-monthly">月</label>
+        </div>
+        
+        <select class="form-select form-select-sm" id="filter-family" style="width: 200px;">
+            <option value="all">全部品类</option>
+        </select>
+        
+        <select class="form-select form-select-sm" id="filter-store" style="width: 150px;">
+            <option value="0">全部门店</option>
+        </select>
+        
+        <button class="btn btn-primary btn-sm" id="btn-refresh">刷新图表</button>
+    </div>
+</div>
+
+<div class="report-canvas">
+<div class="row g-3 metric-row mb-3">
+    <div class="col-md-3">
+        <div class="metric-card h-100">
+            <div class="card-body">
+                <span class="metric-label">总销售额</span>
+                <strong id="kpi-total">-</strong>
+                <small>清洗后全量样本</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card h-100 metric-green">
+            <div class="card-body">
+                <span class="metric-label">日均销售额</span>
+                <strong id="kpi-avg-daily">-</strong>
+                <small>按自然日聚合</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card h-100 metric-amber">
+            <div class="card-body">
+                <span class="metric-label">同比增长率</span>
+                <strong id="kpi-yoy">-</strong>
+                <small>最近两年对比</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card h-100 metric-cyan">
+            <div class="card-body">
+                <span class="metric-label">最佳品类</span>
+                <strong class="metric-name" id="kpi-best-family">-</strong>
+                <small>累计销售最高</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-12">
+        <div class="chart-container chart-panel chart-primary">
+            <div class="chart-heading">
+                <div>
+                    <h5>销售趋势分析</h5>
+                    <span>时间序列主视图，用于观察周期性和整体走势</span>
+                </div>
+            </div>
+            <div id="chart-trend" style="height: 360px;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <div class="chart-container chart-panel">
+            <h5 class="mb-1">月度销售对比</h5>
+            <p class="chart-subtitle">按年份拆分的月度柱状对比</p>
+            <div id="chart-monthly" style="height: 320px;"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container chart-panel">
+            <h5 class="mb-1">品类销售占比</h5>
+            <p class="chart-subtitle">各品类累计销售贡献</p>
+            <div id="chart-pie" style="height: 320px;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-12">
+        <div class="chart-container chart-panel">
+            <h5 class="mb-1">Top 品类排行</h5>
+            <p class="chart-subtitle">优先关注高贡献品类</p>
+            <div id="chart-top" style="height: 340px;"></div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/analysis.js"></script>
+{% endblock %}

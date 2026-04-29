@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商贸公司销售数据分析与智能预测系统</title>
+    <link rel="stylesheet" href="/static/vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="app-sidebar">
+            <a class="brand-block" href="/">
+                <span class="brand-mark">BI</span>
+                <span>
+                    <strong>零售预测 BI</strong>
+                    <small>Sales Forecast Report</small>
+                </span>
+            </a>
+            <nav class="side-nav" id="navbarNav">
+                <a class="nav-link" href="/">数据导入</a>
+                <a class="nav-link" href="/analysis">分析看板</a>
+                <a class="nav-link" href="/prediction">预测工作台</a>
+                <a class="nav-link" href="/report">预测报告</a>
+            </nav>
+            <div class="sidebar-footer">
+                <span>数据范围</span>
+                <strong>5 门店 / 33 品类</strong>
+            </div>
+        </aside>
+
+        <main class="app-main">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Global Loading Overlay -->
+    <div id="global-loading" style="display:none">
+        <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div id="loading-text" class="text-light mt-2">加载中...</div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+    <script src="/static/vendor/bootstrap.bundle.min.js"></script>
+    <script src="/static/vendor/echarts.min.js"></script>
+    <script src="/static/js/common.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
