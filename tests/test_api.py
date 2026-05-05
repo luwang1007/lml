@@ -55,6 +55,23 @@ def test_analysis_overview_after_upload(app_client, uploaded_session):
     assert body['data']['total_sales'] > 0
 
 
+def test_data_options_after_upload(app_client, uploaded_session):
+    resp = app_client.get('/api/data/options', query_string={'session_id': uploaded_session})
+    body = resp.get_json()
+    assert body['code'] == 200
+    assert body['data']['families'][0]['name'] == 'BEVERAGES'
+    assert body['data']['stores'] == [1]
+
+
+def test_demo_load_success(app_client):
+    resp = app_client.post('/api/demo/load')
+    body = resp.get_json()
+    assert body['code'] == 200
+    assert body['data']['rows'] > 100000
+    assert body['data']['summary']['family_count'] == 33
+    assert body['data']['summary']['store_count'] == 5
+
+
 def test_analysis_trend(app_client, uploaded_session):
     resp = app_client.get('/api/analysis/trend', query_string={
         'session_id': uploaded_session,

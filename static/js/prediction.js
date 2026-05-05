@@ -19,20 +19,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const taskStep = document.getElementById('task-step');
 
     let pollInterval = null;
+    let visualProgressTimer = null;
+    let visualProgress = 0;
 
-    Object.keys(FAMILY_ZH_MAP).forEach(f => {
+    const options = await apiFetch(`/api/data/options?session_id=${sessionId}`);
+    const families = Array.isArray(options.families) ? options.families : [];
+    const stores = Array.isArray(options.stores) ? options.stores : [];
+
+    families.forEach(f => {
         const opt = document.createElement('option');
-        opt.value = f;
-        opt.textContent = FAMILY_ZH_MAP[f];
+        opt.value = f.name;
+        opt.textContent = f.name_zh || FAMILY_ZH_MAP[f.name] || f.name;
         predFamily.appendChild(opt);
     });
 
-    for (let i = 1; i <= 5; i++) {
+    stores.forEach(store => {
         const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = `门店 ${i}`;
+        opt.value = store;
+        opt.textContent = `门店 ${store}`;
         predStore.appendChild(opt);
-    }
+    });
 
     forecastDays.addEventListener('input', (e) => {
         forecastDaysVal.textContent = e.target.value;
@@ -147,6 +153,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (predictionPreview) predictionPreview.classList.add('d-none');
         configPanel.classList.add('opacity-50');
         btnStart.disabled = true;
+        taskProgress.classList.add('is-live');
+        setTaskProgress(0, '0%');
         
         ['ARIMA', 'Prophet', 'LSTM'].forEach(m => {
             const el = document.getElementById(`status-${m.toLowerCase()}`);
@@ -160,6 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function hideProgressPanel() {
+        stopVisualProgress();
         progressPanel.classList.add('d-none');
         if (predictionPreview) predictionPreview.classList.remove('d-none');
         configPanel.classList.remove('opacity-50');
@@ -167,16 +176,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function startPolling(taskId) {
+        startVisualProgress(8, 94);
         pollInterval = setInterval(async () => {
             try {
                 const data = await apiFetch(`/api/predict/progress?task_id=${taskId}`);
                 updateProgress(data);
                 if (data.status === 'done') {
                     stopPolling();
+                    stopVisualProgress();
+                    setTaskProgress(100, '100%');
+                    taskProgress.classList.remove('is-live');
                     showToast('success', '预测完成！正在跳转报告...');
                     setTimeout(() => window.location.href = '/report', 1500);
                 } else if (data.status === 'failed') {
                     stopPolling();
+                    stopVisualProgress();
+                    taskProgress.classList.remove('is-live');
                     showToast('error', `预测失败: ${data.error}`);
                     hideProgressPanel();
                 }
@@ -193,9 +208,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         pollInterval = null;
     }
 
+    function setTaskProgress(value, text) {
+        visualProgress = Math.max(0, Math.min(100, Math.round(value)));
+        taskProgress.style.width = `${visualProgress}%`;
+        taskProgress.setAttribute('aria-valuenow', String(visualProgress));
+        taskProgress.dataset.progressLabel = text || `${visualProgress}%`;
+        taskProgress.textContent = '';
+    }
+
+    function startVisualProgress(start = 5, ceiling = 94) {
+        stopVisualProgress();
+        setTaskProgress(Math.max(visualProgress, start), `${Math.max(visualProgress, start)}%`);
+        visualProgressTimer = setInterval(() => {
+            if (visualProgress >= ceiling) return;
+            const remaining = ceiling - visualProgress;
+            const step = Math.max(1, Math.ceil(remaining * 0.08));
+            setTaskProgress(Math.min(ceiling, visualProgress + step));
+        }, 500);
+    }
+
+    function stopVisualProgress() {
+        if (visualProgressTimer) clearInterval(visualProgressTimer);
+        visualProgressTimer = null;
+    }
+
     function updateProgress(data) {
-        taskProgress.style.width = `${data.progress}%`;
-        taskProgress.textContent = `${data.progress}%`;
+        const backendProgress = Number(data.progress || 0);
+        if (backendProgress >= visualProgress || data.status === 'done') {
+            setTaskProgress(backendProgress, `${backendProgress}%`);
+        }
         taskStep.textContent = data.current_step;
 
         if (data.model_status) {

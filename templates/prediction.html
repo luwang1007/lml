@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 
+{% block body_class %}page-prediction{% endblock %}
+
 {% block content %}
 <div class="page-header">
     <div>
-        <p class="eyebrow">预测工作台</p>
-        <h1>预测配置</h1>
-        <p>选择预测对象、模型组合和训练参数，后台会按任务进度执行并生成报告。</p>
+        <p class="eyebrow">Forecast Lab</p>
+        <h1>智能预测 <em>实验台</em></h1>
+        <p>选择品类、门店和模型组合，把每次训练拆成清晰任务：平稳性诊断、多模型训练、评估排序和报告生成。</p>
     </div>
 </div>
 
@@ -131,7 +133,7 @@
             <div class="preview-header">
                 <div>
                     <p class="eyebrow">预测准备</p>
-                    <h2>序列诊断与模型范围</h2>
+                    <h2>序列诊断与 <em>模型范围</em></h2>
                     <p>选择品类和门店后，系统会执行 ADF 平稳性检验，并在开始预测后展示训练进度。</p>
                 </div>
                 <span class="status-pill">Ready</span>

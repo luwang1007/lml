@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 
+{% block body_class %}page-report{% endblock %}
+
 {% block content %}
 <div class="page-header page-header-row">
     <div>
-        <p class="eyebrow">预测报告</p>
+        <p class="eyebrow">Decision Report</p>
         <h1 id="report-title">加载中...</h1>
-        <p>查看预测曲线、模型误差、推荐模型和可导出的预测明细。</p>
+        <p>汇总未来销售曲线、误差指标、<em>推荐模型</em>和可导出的预测明细，形成答辩可展示的最终报告。</p>
     </div>
     <div>
         <a href="#" id="btn-export" class="btn btn-outline-success me-2">导出 CSV</a>

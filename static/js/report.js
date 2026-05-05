@@ -69,7 +69,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 type: 'line',
                 data: modelData.forecast,
                 smooth: true,
-                symbol: 'none'
+                symbol: 'none',
+                lineStyle: { width: 3 },
+                emphasis: { focus: 'series' }
             });
 
             if (Array.isArray(modelData.lower_ci) && Array.isArray(modelData.upper_ci)) {
@@ -162,14 +164,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             legend: { data: seriesData.map(s => s.name), bottom: 0 },
             radar: {
                 indicator: indicator,
-                splitLine: { lineStyle: { color: '#edebe9' } },
-                splitArea: { areaStyle: { color: ['#ffffff', '#faf9f8'] } },
-                axisName: { color: '#605e5c', fontSize: 11 }
+                splitLine: { lineStyle: { color: 'rgba(255,255,255,0.12)' } },
+                splitArea: { areaStyle: { color: ['rgba(255,255,255,0.04)', 'rgba(124,249,200,0.05)'] } },
+                axisName: { color: '#AAB6C9', fontSize: 11 }
             },
             series: [{
                 type: 'radar',
                 data: seriesData,
-                areaStyle: { opacity: 0.08 }
+                areaStyle: { opacity: 0.18 }
             }]
         });
         radarChart.setOption(option);

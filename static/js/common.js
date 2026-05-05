@@ -13,7 +13,7 @@ const FAMILY_ZH_MAP = {
   'SCHOOL AND OFFICE SUPPLIES':'文具办公','SEAFOOD':'海鲜'
 };
 
-const CHART_COLORS = ['#118DFF', '#12239E', '#E66C37', '#6B007B', '#E044A7', '#744EC2', '#D9B300', '#D64550'];
+const CHART_COLORS = ['#7CF9C8', '#2EE6A6', '#67B7FF', '#B08CFF', '#5DF2AE', '#6CE6FF', '#FF8F9A', '#A8FFDF'];
 
 function formatNumber(value, digits = 0) {
   const number = Number(value || 0);
@@ -24,27 +24,27 @@ function baseChartOption(extra = {}) {
   return {
     color: CHART_COLORS,
     backgroundColor: 'transparent',
-    textStyle: { color: '#605e5c', fontFamily: '"Segoe UI", "Microsoft YaHei", Arial, sans-serif' },
+    textStyle: { color: '#AAB6C9', fontFamily: '"Microsoft YaHei UI", "HarmonyOS Sans SC", sans-serif' },
     tooltip: {
       trigger: 'axis',
-      backgroundColor: 'rgba(255, 255, 255, 0.96)',
-      borderColor: '#edebe9',
+      backgroundColor: 'rgba(4, 8, 15, 0.96)',
+      borderColor: 'rgba(124, 249, 200, 0.3)',
       borderWidth: 1,
-      textStyle: { color: '#252423' },
-      extraCssText: 'box-shadow: 0 3px 10px rgba(0,0,0,0.10);'
+      textStyle: { color: '#F2FBF7' },
+      extraCssText: 'backdrop-filter: blur(12px); box-shadow: 0 16px 36px rgba(0,0,0,0.34); border-radius: 14px;'
     },
-    legend: { top: 0, itemWidth: 12, itemHeight: 8, textStyle: { color: '#605e5c', fontSize: 11 } },
+    legend: { top: 0, itemWidth: 12, itemHeight: 8, textStyle: { color: '#AAB6C9', fontSize: 11 } },
     grid: { left: 42, right: 18, bottom: 38, top: 42, containLabel: true },
     xAxis: {
-      axisLine: { lineStyle: { color: '#edebe9' } },
+      axisLine: { lineStyle: { color: 'rgba(255,255,255,0.14)' } },
       axisTick: { show: false },
-      axisLabel: { color: '#605e5c', fontSize: 11 }
+      axisLabel: { color: '#AAB6C9', fontSize: 11 }
     },
     yAxis: {
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: '#605e5c', fontSize: 11 },
-      splitLine: { lineStyle: { color: '#edebe9', type: 'dashed' } }
+      axisLabel: { color: '#AAB6C9', fontSize: 11 },
+      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.10)', type: 'dashed' } }
     },
     ...extra
   };

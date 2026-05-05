@@ -7,7 +7,7 @@
 
 ## 技术栈
 - 后端：Python 3.10 + Flask
-- 数据集：Kaggle Favorita Store Sales（5家门店子集，278,520行）
+- 数据集：Kaggle Favorita Store Sales（5家门店子集，277,860行）
 - 预测模型：ARIMA (statsmodels) / Prophet (Facebook) / LSTM (PyTorch)
 - 前端：Bootstrap 5 + ECharts 5（离线可用）
 
@@ -70,12 +70,17 @@ pip install torch --index-url https://download.pytorch.org/whl/cpu
 python app.py
 ```
 
-访问 http://localhost:5000
+访问 http://localhost:5000。若已存在 `data/raw/train_subset.csv`，首页可直接点击“加载内置演示数据”进入分析与预测流程，无需重新上传文件。
 
 ### 5. 运行测试
 ```bash
 pip install pytest
 pytest tests/ -v
+```
+
+本仓库已包含 Windows 虚拟环境时，也可运行：
+```bash
+./venv/Scripts/python.exe -m pytest tests -q
 ```
 
 ## 常见问题
@@ -94,4 +99,4 @@ pytest tests/ -v
 
 ## 数据集说明
 Favorita Store Sales（5家门店，33个品类，2013-01-01至2017-08-15）  
-总计 278,520 条记录
+总计 277,860 条记录

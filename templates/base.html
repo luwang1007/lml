@@ -4,28 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>商贸公司销售数据分析与智能预测系统</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2304080f'/%3E%3Cpath d='M18 35h28M18 25h20M18 45h12' stroke='%237cf9c8' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="/static/vendor/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <div class="app-layout">
         <aside class="app-sidebar">
             <a class="brand-block" href="/">
-                <span class="brand-mark">BI</span>
+                <span class="brand-mark">SI</span>
                 <span>
-                    <strong>零售预测 BI</strong>
-                    <small>Sales Forecast Report</small>
+                    <strong>销售智能决策中心</strong>
+                    <small>Sales Intelligence</small>
                 </span>
             </a>
-            <nav class="side-nav" id="navbarNav">
-                <a class="nav-link" href="/">数据导入</a>
-                <a class="nav-link" href="/analysis">分析看板</a>
-                <a class="nav-link" href="/prediction">预测工作台</a>
-                <a class="nav-link" href="/report">预测报告</a>
+            <nav class="side-nav" id="navbarNav" aria-label="主导航">
+                <a class="nav-link" href="/"><span>01</span>数据导入</a>
+                <a class="nav-link" href="/analysis"><span>02</span>运营看板</a>
+                <a class="nav-link" href="/prediction"><span>03</span>预测工作台</a>
+                <a class="nav-link" href="/report"><span>04</span>决策报告</a>
             </nav>
             <div class="sidebar-footer">
-                <span>数据范围</span>
-                <strong>5 门店 / 33 品类</strong>
+                <span>演示数据资产</span>
+                <strong>5 门店 / 33 品类 / 1684 天</strong>
             </div>
         </aside>
 

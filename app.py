@@ -14,8 +14,8 @@ import pandas as pd
 from flask import Flask, jsonify, render_template, request, send_file, session
 
 from config import (
-    ALLOWED_EXTENSIONS, DATA_PROC_DIR as DATA_PROCESSED_DIR, FORECAST_DAYS,
-    LSTM_ENABLED, MAX_CONTENT_LENGTH, PROPHET_ENABLED, SECRET_KEY,
+    ALLOWED_EXTENSIONS, DATA_PROC_DIR as DATA_PROCESSED_DIR, DATA_RAW_DIR,
+    FORECAST_DAYS, LSTM_ENABLED, MAX_CONTENT_LENGTH, PROPHET_ENABLED, SECRET_KEY,
     FAMILY_ZH_MAP, MODEL_DIR, safe_family_name,
 )
 from modules.analyzer import DataAnalyzer
@@ -112,6 +112,19 @@ def report():
     return render_template('report.html')
 
 
+def _process_data_file(filepath, session_id):
+    processor = DataProcessor(filepath, session_id=session_id)
+    meta_path, validation = processor.process()
+    session['meta_path'] = meta_path
+    summary = DataProcessor.load_processed(meta_path)
+    return {
+        'session_id': session_id,
+        'summary': _load_summary_from_meta(meta_path),
+        'validation': validation,
+        'rows': len(summary),
+    }
+
+
 @app.route('/api/upload', methods=['POST'])
 def upload():
     if 'file' not in request.files:
@@ -133,16 +146,7 @@ def upload():
     f.save(tmp_path)
 
     try:
-        processor = DataProcessor(tmp_path, session_id=session_id)
-        meta_path, validation = processor.process()
-        session['meta_path'] = meta_path
-        summary = DataProcessor.load_processed(meta_path)
-        return _ok({
-            'session_id': session_id,
-            'summary': _load_summary_from_meta(meta_path),
-            'validation': validation,
-            'rows': len(summary),
-        })
+        return _ok(_process_data_file(tmp_path, session_id))
     except ValueError as e:
         return _err(400, str(e))
     except Exception as e:
@@ -151,6 +155,22 @@ def upload():
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
+
+
+@app.route('/api/demo/load', methods=['POST'])
+def load_demo_data():
+    demo_path = os.path.join(DATA_RAW_DIR, 'train_subset.csv')
+    if not os.path.exists(demo_path):
+        return _err(404, '未找到演示数据 data/raw/train_subset.csv，请先运行 prepare_data.py')
+
+    session_id = f'demo_{uuid.uuid4()}'
+    try:
+        return _ok(_process_data_file(demo_path, session_id))
+    except ValueError as e:
+        return _err(400, str(e))
+    except Exception as e:
+        logger.exception('Demo data load error')
+        return _err(500, f'演示数据加载失败：{e}')
 
 
 def _load_summary_from_meta(meta_path):
@@ -238,6 +258,19 @@ def data_summary():
     with open(meta_path, encoding='utf-8') as fp:
         meta = json.load(fp)
     return _ok(meta.get('summary', {}))
+
+
+@app.route('/api/data/options')
+def data_options():
+    df, err = _get_df()
+    if err:
+        return err
+    from config import COL_FAMILY, COL_STORE
+    families = []
+    for family in sorted(df[COL_FAMILY].dropna().unique().tolist()):
+        families.append({'name': family, 'name_zh': FAMILY_ZH_MAP.get(family, family)})
+    stores = sorted(int(s) for s in df[COL_STORE].dropna().unique().tolist())
+    return _ok({'families': families, 'stores': stores})
 
 
 @app.route('/api/analysis/overview')

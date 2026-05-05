@@ -18,3 +18,8 @@ build/
 .omc/
 .omx/
 .claude/
+.codex/
+.playwright-mcp/
+.sisyphus/
+.mcp.json
+tmp/

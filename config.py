@@ -13,7 +13,7 @@ DATA_RAW_DIR  = os.path.join(BASE_DIR, 'data', 'raw')
 DATA_PROC_DIR = os.path.join(BASE_DIR, 'data', 'processed')
 MODEL_DIR     = os.path.join(BASE_DIR, 'data', 'models')
 
-# ─── Flask ───────��───────────────────────────────────────────────
+# ─── Flask ───────────────────────────────────────────────────────
 UPLOAD_FOLDER      = DATA_RAW_DIR
 ALLOWED_EXTENSIONS = {'csv', 'xlsx'}   # 不支持 .xls（旧格式不可靠）
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
@@ -21,7 +21,7 @@ SECRET_KEY         = os.environ.get('SECRET_KEY', 'favorita-sales-2024-dev-key')
 
 # ─── 数据集：Favorita（全局统一，勿随意修改）────────────────────
 # 本项目裁剪使用 5 家门店，33 个品类全保留
-# 总行数：5 × 33 × 1688 = 278,520 行
+# 实际裁剪样本约 277,860 行（2013-01-01 仅部分门店有记录）
 DATA_STORES = [1, 2, 3, 4, 5]          # store_nbr（整数）
 DATA_FAMILIES = [                       # 33 个品类（Favorita 原始英文名称）
     'AUTOMOTIVE', 'BABY CARE', 'BEAUTY', 'BEVERAGES', 'BOOKS',

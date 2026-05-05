@@ -18,16 +18,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function init() {
         showLoading('加载数据中...');
         try {
-            const [overview, monthly, pie, top] = await Promise.all([
+            const [overview, options, monthly, pie, top] = await Promise.all([
                 apiFetch(`/api/analysis/overview?session_id=${sessionId}`),
+                apiFetch(`/api/data/options?session_id=${sessionId}`),
                 apiFetch(`/api/analysis/monthly_comparison?session_id=${sessionId}`),
                 apiFetch(`/api/analysis/category_pie?session_id=${sessionId}`),
                 apiFetch(`/api/analysis/top_families?session_id=${sessionId}&n=10`)
             ]);
 
             renderKPICards(overview);
-            populateDropdowns(overview);
-            
+            populateDropdowns(options);
+
             renderMonthlyComparison(monthly);
             renderCategoryPie(pie);
             renderTopFamilies(top);
@@ -40,20 +41,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    function populateDropdowns(overview) {
-        Object.keys(FAMILY_ZH_MAP).forEach(f => {
+    function populateDropdowns(options) {
+        const families = Array.isArray(options.families) ? options.families : [];
+        const stores = Array.isArray(options.stores) ? options.stores : [];
+
+        families.forEach(f => {
             const opt = document.createElement('option');
-            opt.value = f;
-            opt.textContent = FAMILY_ZH_MAP[f];
+            opt.value = f.name;
+            opt.textContent = f.name_zh || FAMILY_ZH_MAP[f.name] || f.name;
             filterFamily.appendChild(opt);
         });
 
-        for (let i = 1; i <= 5; i++) {
+        stores.forEach(store => {
             const opt = document.createElement('option');
-            opt.value = i;
-            opt.textContent = `门店 ${i}`;
+            opt.value = store;
+            opt.textContent = `门店 ${store}`;
             filterStore.appendChild(opt);
-        }
+        });
     }
 
     function renderKPICards(overview) {
@@ -88,7 +92,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 data: data.series[0].data,
                 type: 'line',
                 smooth: true,
-                areaStyle: { opacity: 0.08 },
+                lineStyle: { width: 3, shadowColor: 'rgba(124,249,200,0.45)', shadowBlur: 14 },
+                areaStyle: { opacity: 0.18, color: 'rgba(124,249,200,0.18)' },
                 itemStyle: { color: CHART_COLORS[0] }
             }],
         });
@@ -122,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 radius: ['40%', '70%'],
                 center: ['50%', '46%'],
                 data: pieData,
-                label: { color: '#605e5c', fontSize: 11 },
+                label: { color: '#AAB6C9', fontSize: 11 },
                 emphasis: { scaleSize: 4 }
             }]
         });
@@ -140,7 +145,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             series: [{
                 type: 'bar',
                 data: sales,
-                itemStyle: { color: CHART_COLORS[1], borderRadius: [0, 2, 2, 0] }
+                itemStyle: { color: CHART_COLORS[1], borderRadius: [0, 10, 10, 0] }
             }],
             grid: { left: 96, right: 28, bottom: 36, top: 18, containLabel: true }
         });

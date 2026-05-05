@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 
+{% block body_class %}page-analysis{% endblock %}
+
 {% block content %}
 <div class="page-header page-header-row">
     <div>
-        <p class="eyebrow">分析看板</p>
-        <h1>销售运营分析</h1>
-        <p>按品类、门店和时间粒度查看销售趋势、结构占比和关键排行。</p>
+        <p class="eyebrow">Retail Operations Deck</p>
+        <h1>销售运营 <em>指挥舱</em></h1>
+        <p>用薄荷绿高亮的指标墙、趋势主图和品类排行快速说明经营结构，支撑答辩中的数据分析章节。</p>
     </div>
     <div class="toolbar d-flex gap-2 align-items-center flex-wrap">
         <div class="btn-group" role="group" id="filter-granularity">
