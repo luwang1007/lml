@@ -121,13 +121,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const option = baseChartOption({
             tooltip: { trigger: 'item' },
-            legend: { type: 'scroll', bottom: 0 },
+            legend: {
+                type: 'scroll',
+                bottom: 0,
+                textStyle: { color: '#F2FBF7', fontSize: 12, fontWeight: 700 },
+                inactiveColor: '#708780',
+                pageIconColor: '#7CF9C8',
+                pageIconInactiveColor: '#708780',
+                pageTextStyle: { color: '#DFFEEE' }
+            },
             series: [{
                 type: 'pie',
                 radius: ['40%', '70%'],
                 center: ['50%', '46%'],
                 data: pieData,
-                label: { color: '#AAB6C9', fontSize: 11 },
+                label: {
+                    color: '#F2FBF7',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    textBorderColor: 'rgba(4, 8, 15, 0.92)',
+                    textBorderWidth: 3
+                },
+                labelLine: {
+                    lineStyle: { color: 'rgba(242, 251, 247, 0.72)' }
+                },
                 emphasis: { scaleSize: 4 }
             }]
         });

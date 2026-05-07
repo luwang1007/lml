@@ -166,7 +166,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 indicator: indicator,
                 splitLine: { lineStyle: { color: 'rgba(255,255,255,0.12)' } },
                 splitArea: { areaStyle: { color: ['rgba(255,255,255,0.04)', 'rgba(124,249,200,0.05)'] } },
-                axisName: { color: '#AAB6C9', fontSize: 11 }
+                axisName: {
+                    color: '#F2FBF7',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    textBorderColor: 'rgba(4, 8, 15, 0.92)',
+                    textBorderWidth: 3
+                }
             },
             series: [{
                 type: 'radar',

@@ -14,6 +14,8 @@
     --primary: #7cf9c8;
     --primary-dark: #20c997;
     --accent: #2ee6a6;
+    --mint: var(--primary);
+    --mint-dark: var(--accent);
     --blue: #67b7ff;
     --success: #5df2ae;
     --warning: #ff8f5a;
