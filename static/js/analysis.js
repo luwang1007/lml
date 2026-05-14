@@ -120,7 +120,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const pieData = Array.isArray(data.series) ? data.series : [];
 
         const option = baseChartOption({
-            tooltip: { trigger: 'item' },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}<br/>销量：{c}<br/>占比：<b>{d}%</b>'
+            },
             legend: {
                 type: 'scroll',
                 bottom: 0,
@@ -139,6 +142,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     color: '#F2FBF7',
                     fontSize: 12,
                     fontWeight: 700,
+                    formatter: '{b}  {d}%',
                     textBorderColor: 'rgba(4, 8, 15, 0.92)',
                     textBorderWidth: 3
                 },
@@ -154,6 +158,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderTopFamilies(data) {
         const families = Array.isArray(data.families) ? [...data.families].reverse() : [];
         const sales = Array.isArray(data.sales) ? [...data.sales].reverse() : [];
+        const barData = sales.map((v, i) => ({
+            value: v,
+            itemStyle: {
+                color: CHART_COLORS[(families.length - 1 - i) % CHART_COLORS.length],
+                borderRadius: [0, 10, 10, 0]
+            }
+        }));
 
         const option = baseChartOption({
             tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
@@ -161,8 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             yAxis: { type: 'category', data: families },
             series: [{
                 type: 'bar',
-                data: sales,
-                itemStyle: { color: CHART_COLORS[1], borderRadius: [0, 10, 10, 0] }
+                data: barData
             }],
             grid: { left: 96, right: 28, bottom: 36, top: 18, containLabel: true }
         });
