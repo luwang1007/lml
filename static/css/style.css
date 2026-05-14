@@ -9,8 +9,8 @@
     --border: rgba(178, 255, 219, 0.14);
     --border-strong: rgba(178, 255, 219, 0.28);
     --text: #f2fbf7;
-    --muted: #a8bcb6;
-    --subtle: #708780;
+    --muted: #cfe0d9;
+    --subtle: #9ab1a9;
     --primary: #7cf9c8;
     --primary-dark: #20c997;
     --accent: #2ee6a6;
@@ -192,7 +192,7 @@ body::before {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--muted);
+    color: #e3efe9;
     border: 1px solid transparent;
     border-radius: 18px;
     padding: 12px 14px 12px 18px;
@@ -207,8 +207,8 @@ body::before {
     width: 28px;
     height: 24px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.07);
-    color: var(--subtle);
+    background: rgba(255, 255, 255, 0.12);
+    color: #d2e3dc;
     font-size: 0.68rem;
     font-weight: 900;
 }
@@ -1230,7 +1230,7 @@ body::before {
     --mint-dark: #2ee6a6;
     --bg-dark: #04080f;
     --text-white: #ffffff;
-    --text-muted: #a8bcb6;
+    --text-muted: #cfe0d9;
     --glass: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.08);
     --glass-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
@@ -1376,12 +1376,12 @@ body::before {
 }
 
 .momentum-btn-text {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    font-weight: 600;
-    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-white);
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 8px 16px;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
