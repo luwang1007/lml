@@ -9,16 +9,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnExport.href = `/api/export/forecast?task_id=${taskId}&format=csv`;
 
     let forecastChart = registerChart('chart-forecast');
-    let barChart = registerChart('chart-bar');
-    let radarChart = registerChart('chart-radar');
-    let componentsChart = registerChart('chart-components');
-    let lstmLossChart = registerChart('chart-lstm-loss');
+    let barChart = null;
+    let radarChart = null;
+    let componentsChart = null;
+    let lstmLossChart = null;
+
+    let reportData = null;
+    const renderedTabs = { metrics: false, details: false };
+
+    function renderMetricsTab() {
+        if (renderedTabs.metrics || !reportData) return;
+        renderedTabs.metrics = true;
+        renderMetricsTable(reportData.evaluation.metrics_table);
+        barChart = barChart || registerChart('chart-bar');
+        renderBarChart(reportData.evaluation.bar_chart);
+        if (Object.keys(reportData.models).length >= 2) {
+            radarChart = radarChart || registerChart('chart-radar');
+            renderRadarChart(reportData.evaluation.radar_chart);
+        } else {
+            document.getElementById('chart-radar').parentElement.parentElement.classList.add('d-none');
+        }
+    }
+
+    function renderDetailsTab() {
+        if (renderedTabs.details || !reportData) return;
+        renderedTabs.details = true;
+        if (reportData.models.Prophet && reportData.models.Prophet.components) {
+            document.getElementById('container-components').classList.remove('d-none');
+            componentsChart = componentsChart || registerChart('chart-components');
+            renderComponentsChart(reportData.models.Prophet.dates, reportData.models.Prophet.components);
+        }
+        if (reportData.models.LSTM && reportData.models.LSTM.training_history) {
+            document.getElementById('container-lstm-loss').classList.remove('d-none');
+            lstmLossChart = lstmLossChart || registerChart('chart-lstm-loss');
+            renderTrainingHistory(reportData.models.LSTM.training_history);
+        }
+    }
+
+    document.getElementById('metrics-tab').addEventListener('shown.bs.tab', renderMetricsTab);
+    document.getElementById('details-tab').addEventListener('shown.bs.tab', renderDetailsTab);
 
     async function init() {
         showLoading('加载预测报告...');
         try {
             const data = await apiFetch(`/api/predict/result?task_id=${taskId}`);
-            
+            reportData = data;
+
             const familyName = FAMILY_ZH_MAP[data.family] || data.family;
             document.getElementById('report-title').textContent = `预测报告: ${familyName} (门店 ${data.store_nbr})`;
             document.getElementById('summary-target').textContent = `${familyName} / 门店 ${data.store_nbr}`;
@@ -26,26 +62,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('summary-best-model').textContent = data.evaluation.best_model || '未评估';
 
             renderForecastChart(data.models, data.evaluation);
-            renderMetricsTable(data.evaluation.metrics_table);
-            renderBarChart(data.evaluation.bar_chart);
-            
-            if (Object.keys(data.models).length >= 2) {
-                renderRadarChart(data.evaluation.radar_chart);
-            } else {
-                document.getElementById('chart-radar').parentElement.parentElement.classList.add('d-none');
-            }
-
             renderRecommendation(data.evaluation);
 
-            if (data.models.Prophet && data.models.Prophet.components) {
-                document.getElementById('container-components').classList.remove('d-none');
-                renderComponentsChart(data.models.Prophet.dates, data.models.Prophet.components);
-            }
-
-            if (data.models.LSTM && data.models.LSTM.training_history) {
-                document.getElementById('container-lstm-loss').classList.remove('d-none');
-                renderTrainingHistory(data.models.LSTM.training_history);
-            }
+            if (document.getElementById('metrics-tab').classList.contains('active')) renderMetricsTab();
+            if (document.getElementById('details-tab').classList.contains('active')) renderDetailsTab();
 
         } catch (error) {
             showToast('error', error.message);
@@ -159,11 +179,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             value: s.values || s.value || []
         }));
 
-        const option = baseChartOption({
-            tooltip: {},
-            legend: { data: seriesData.map(s => s.name), bottom: 0 },
+        const option = {
+            color: CHART_COLORS,
+            backgroundColor: 'transparent',
+            textStyle: { color: CHART_MUTED_TEXT, fontFamily: '"Microsoft YaHei UI", "HarmonyOS Sans SC", sans-serif' },
+            tooltip: {
+                backgroundColor: 'rgba(4, 8, 15, 0.96)',
+                borderColor: 'rgba(124, 249, 200, 0.3)',
+                borderWidth: 1,
+                textStyle: { color: CHART_TEXT },
+                extraCssText: 'backdrop-filter: blur(12px); box-shadow: 0 16px 36px rgba(0,0,0,0.34); border-radius: 14px;'
+            },
+            legend: {
+                data: seriesData.map(s => s.name),
+                bottom: 0,
+                textStyle: { color: CHART_TEXT, fontSize: 12, fontWeight: 700 },
+                inactiveColor: CHART_SUBTLE_TEXT
+            },
             radar: {
                 indicator: indicator,
+                center: ['50%', '52%'],
+                radius: '62%',
                 splitLine: { lineStyle: { color: 'rgba(255,255,255,0.12)' } },
                 splitArea: { areaStyle: { color: ['rgba(255,255,255,0.04)', 'rgba(124,249,200,0.05)'] } },
                 axisName: {
@@ -179,7 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 data: seriesData,
                 areaStyle: { opacity: 0.18 }
             }]
-        });
+        };
         radarChart.setOption(option);
     }
 
