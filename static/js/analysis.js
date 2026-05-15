@@ -117,7 +117,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderCategoryPie(data) {
-        const pieData = Array.isArray(data.series) ? data.series : [];
+        const rawPie = Array.isArray(data.series) ? data.series : [];
+        const pieTotal = rawPie.reduce((sum, item) => sum + (Number(item.value) || 0), 0) || 1;
+        const pieData = rawPie.map(item => {
+            const small = (Number(item.value) || 0) / pieTotal * 100 < 1.5;
+            return small
+                ? { ...item, label: { show: false }, labelLine: { show: false } }
+                : item;
+        });
 
         const option = baseChartOption({
             tooltip: {
@@ -135,18 +142,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
             series: [{
                 type: 'pie',
-                radius: ['40%', '70%'],
-                center: ['50%', '46%'],
+                radius: ['34%', '56%'],
+                center: ['50%', '40%'],
                 data: pieData,
+                minAngle: 2,
+                avoidLabelOverlap: true,
                 label: {
                     color: '#F2FBF7',
                     fontSize: 12,
                     fontWeight: 700,
-                    formatter: '{b}  {d}%',
+                    formatter: (p) => (p.percent >= 1.5 ? `${p.name}  ${p.percent}%` : ''),
                     textBorderColor: 'rgba(4, 8, 15, 0.92)',
                     textBorderWidth: 3
                 },
                 labelLine: {
+                    show: true,
                     lineStyle: { color: 'rgba(242, 251, 247, 0.72)' }
                 },
                 emphasis: { scaleSize: 4 }
