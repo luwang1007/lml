@@ -117,47 +117,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderCategoryPie(data) {
-        const rawPie = Array.isArray(data.series) ? data.series : [];
-        const pieTotal = rawPie.reduce((sum, item) => sum + (Number(item.value) || 0), 0) || 1;
-        const pieData = rawPie.map(item => {
-            const small = (Number(item.value) || 0) / pieTotal * 100 < 1.5;
-            return small
-                ? { ...item, label: { show: false }, labelLine: { show: false } }
-                : item;
-        });
+        const pieData = Array.isArray(data.series) ? data.series : [];
 
         const option = baseChartOption({
             tooltip: {
                 trigger: 'item',
                 formatter: '{b}<br/>销量：{c}<br/>占比：<b>{d}%</b>'
             },
-            legend: {
-                type: 'scroll',
-                bottom: 0,
-                textStyle: { color: '#F2FBF7', fontSize: 12, fontWeight: 700 },
-                inactiveColor: '#708780',
-                pageIconColor: '#7CF9C8',
-                pageIconInactiveColor: '#708780',
-                pageTextStyle: { color: '#DFFEEE' }
-            },
+            legend: { show: false },
             series: [{
                 type: 'pie',
-                radius: ['34%', '56%'],
-                center: ['50%', '40%'],
+                radius: ['24%', '38%'],
+                center: ['50%', '50%'],
                 data: pieData,
                 minAngle: 2,
                 avoidLabelOverlap: true,
                 label: {
                     color: '#F2FBF7',
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: 700,
-                    formatter: (p) => (p.percent >= 1.5 ? `${p.name}  ${p.percent}%` : ''),
+                    alignTo: 'edge',
+                    edgeDistance: 6,
+                    minMargin: 3,
+                    formatter: '{b} {d}%',
                     textBorderColor: 'rgba(4, 8, 15, 0.92)',
                     textBorderWidth: 3
                 },
                 labelLine: {
                     show: true,
-                    lineStyle: { color: 'rgba(242, 251, 247, 0.72)' }
+                    length: 14,
+                    length2: 8,
+                    maxSurfaceAngle: 80,
+                    lineStyle: { color: 'rgba(242, 251, 247, 0.55)' }
+                },
+                labelLayout: (params) => {
+                    const points = params.labelLinePoints;
+                    if (points && pieChart) {
+                        const isLeft = params.labelRect.x < pieChart.getWidth() / 2;
+                        points[2][0] = isLeft
+                            ? params.labelRect.x
+                            : params.labelRect.x + params.labelRect.width;
+                    }
+                    return { labelLinePoints: points };
                 },
                 emphasis: { scaleSize: 4 }
             }]
